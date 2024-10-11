@@ -57,31 +57,30 @@ const getUsuarioById = async (req, res) => {
   const postUsuario = async (req, res) => {
     try {
       const { nombre, correo, cuentaIban, montoDisponible} = req.body;
+      const cuentaValida= cuentaIban.split(''); //convertir string a lista
 
-      //Validar errores de sintáxis o falta de dato
-      if (!nombre || !correo || !cuentaIban || !montoDisponible) {
-        return res.status(400).json({ message: "Existe un error de sintáxis o falta algún atributo: 'nombre', 'descripcion', 'precio' o 'cantidadDisponible'." });
+      if (cuentaValida.length === 22 && nombre && correo && montoDisponible){
+
+        const usuarios = await leerJson(); //Traer los usuarios desde el JSON
+
+        //Agregar el nuevo producto
+        const nuevoUsuario = {
+          id: usuarios[usuarios.length -1].id + 1,
+          nombre,
+          correo,
+          cuentaIban,
+          montoDisponible
+        };
+        //Enviar el nuevo producto a la lista de usuarios
+        usuarios.push(nuevoUsuario);
+        //Y lo envío al JSON:
+        await escribirJson (usuarios); 
+        res.status(201).json(nuevoUsuario);
+      }else if (cuentaValida.length !== 22 ) {
+          res.status(400).json({message: "La cuenta IBAN debe contener al menos 22 carácteres."})
+      }else{
+        return res.status(400).json({ message: "Existe un error de sintáxis o falta algún atributo: 'nombre', 'correo', 'cuentaIban' o 'montoDisponible'." });
       }
-  
-      const usuarios = await leerJson(); //Traer los usuarios desde el JSON
-
-      //Agregar el nuevo producto
-      const nuevoUsuario = {
-        id: usuarios[usuarios.length -1].id + 1,
-        nombre,
-        correo,
-        cuentaIban,
-        montoDisponible
-      };
-      
-  
-      //Enviar el nuevo producto a la lista de usuarios
-      usuarios.push(nuevoUsuario);
-
-      //Y lo envío al JSON:
-      await escribirJson (usuarios); 
-      res.status(201).json(nuevoUsuario);
-
     //Capturar errores
     } catch (error) {
       res.status(500).json({ message: "Error al agregar producto", error });
@@ -89,9 +88,7 @@ const getUsuarioById = async (req, res) => {
   };
   
 
-
-
-  /////////////////////////////////////////PUT /////////////////////////////////////////
+  ///////////////////////////////////////// PUT ////////////////////////////////////////
 const updateUsuario = async (req, res) => {
     try {
       const { id } = req.params;
