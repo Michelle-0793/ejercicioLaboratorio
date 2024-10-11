@@ -2,7 +2,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-//importación del archivo json
+//Importación del archivo json
 const archivoJson = path.join(__dirname, 'usuarios.json');
 
 ///////////////////////////////  LEER EL ARCHIVO JSON  ///////////////////////////////
@@ -16,27 +16,42 @@ const leerJson = async () => {
   }
 };
 
-///////////////////////////////  ESCRIBIR EL ARCHIVO JSON  ///////////////////////////////
+/////////////////////////////  ESCRIBIR EL ARCHIVO JSON  /////////////////////////////
 const escribirJson = async (usuarios) => {
   try {
       await fs.writeFile(archivoJson, JSON.stringify(usuarios, null, 2), 'utf8');
-      console.log("El archivo JSON ha sido modificado con éxito");
+      const now = new Date().toLocaleString(); //Registrar la hora en que se ejecuta la solicitud
+      console.log(`El archivo JSON ha sido modificado con éxito. ${now}`);
   } catch (err) {
       console.error("Error al escribir en el archivo JSON", err);
       throw err; //Propagar el error para que sea capturado en el constralador
   }
 };
 
-///////////////////////////////////////// GET /////////////////////////////////////////
+//////////////////////////////////////// GET ////////////////////////////////////////
   const getUsuarios = async (req, res) => {
     try {
       const usuarios = await leerJson(); //Traer los usuarios desde el JSON
-      res.json(usuarios);
+      res.json(usuarios); //Envía la respuesta en formato JSON
     } catch (error) {
+      //Si ocurre un error, envía una respuesta con el estado 500 y un mensaje de error
       res.status(500).json({ message: "Error al obtener los usuarios", error });
     }
   };
+
   
+//////////////////////////////////// GET by ID //////////////////////////////////////
+const getUsuarioById = async (req, res) => {
+  try {
+      const id = parseInt(req.params.id);
+      const usuarios = await leerJson(); //Traer los usuarios desde el JSON
+      const usuario= usuarios.find(item => item.id === id);
+      res.json(usuario); //Envía la respuesta en formato JSON con el usuario
+  } catch (error) {
+      //Si ocurre un error, envía una respuesta con el estado 500 y un mensaje de error
+      res.status(500).json({ message: 'Error al obtener el usuario', error });
+  }
+};
 
 ///////////////////////////////////////// POST /////////////////////////////////////////
   const postUsuario = async (req, res) => {
@@ -58,6 +73,7 @@ const escribirJson = async (usuarios) => {
         cuentaIban,
         montoDisponible
       };
+      
   
       //Enviar el nuevo producto a la lista de usuarios
       usuarios.push(nuevoUsuario);
@@ -73,7 +89,9 @@ const escribirJson = async (usuarios) => {
   };
   
 
-///////////////////////////////////////// PUT /////////////////////////////////////////
+
+
+  /////////////////////////////////////////PUT /////////////////////////////////////////
 const updateUsuario = async (req, res) => {
     try {
       const { id } = req.params;
@@ -81,11 +99,13 @@ const updateUsuario = async (req, res) => {
       const usuarios = await leerJson(); //Traer los usuarios desde el JSON
       const usuarioIndex = usuarios.findIndex(usuario => usuario.id === parseInt(id));
 
+
+
+
       //Validar errores de sintáxis o falta de dato
       if (!nombre || !correo || !cuentaIban || !montoDisponible) {
         return res.status(400).json({ message: "Existe un error de sintáxis o falta algún atributo: 'nombre', 'correo', 'cuentaIban' o 'montoDisponible'." });
       }
-  
       if (nombre) {
         usuarios[usuarioIndex].nombre = nombre;
       }
@@ -108,6 +128,25 @@ const updateUsuario = async (req, res) => {
     }
   };
   
+
+  ///////////////////////////////////////// PACTH /////////////////////////////////////////
+  const patchUsuario = async (req, res) =>{
+    try {
+        const id = parseInt(req.params.id);
+        const usuarios = await leerJson(); //Traer los usuarios desde el JSON
+        const usuario= usuarios.find(item => item.id === id);
+        const index= usuarios.indexOf(usuario)
+
+        //Object.assign(target, source(s))
+        Object.assign(usuario, req.body); 
+        usuarios[index]=usuario; 
+        await escribirJson (usuarios); //Envío el usuario actualizado al Json}
+        res.status(200).json({ message: "Usuario actualizado con éxito", usuario: usuarios[index] });
+    } catch (error) {
+        res.status(500).json({mensaje:'error interno en el servidor'})
+    }
+}
+
 ///////////////////////////////////////// DELETE /////////////////////////////////////////
 const deleteUsuario = async (req, res) => {
     try {
@@ -134,41 +173,6 @@ const deleteUsuario = async (req, res) => {
     }
   };
 
-
-///////////////Patch de Usuarios/////////////////////////////////////////////
-  const patchUsuario = async (req, res) =>{
-    try {
-      console.log("hola");
-        const id = parseInt(req.params.id);
-        const usuarios = await leerJson(); //Traer los usuarios desde el JSON
-        const usuario= usuarios.find(item => item.id === id);
-        const index= usuarios.indexOf(usuario)
-
-        //////Object.assign(target, source(s))////////////////
-        Object.assign(usuario, req.body); 
-        console.log(usuario);
-        usuarios[index]=usuario; 
-        await escribirJson (usuarios); //Envío el usuario actualizado al Json}
-        res.status(200).json({ message: "Usuario actualizado con éxito", usuario: usuarios[usuarioIndex] });
-    } catch (error) {
-        res.status(500).json({mensaje:'error interno en el servidor'})
-    }
-}
-
-////////////// Get usuario by ID///////////////////////////////////
-
-const getUsuarioById = async (req, res) => {
-    try {
-        const id = parseInt(req.params.id);
-        const usuarios = await leerJson(); //Traer los usuarios desde el JSON
-        const usuario= usuarios.find(item => item.id === id);
-        // Envía la respuesta en formato JSON con el usuario
-        res.json(usuario);
-    } catch (error) {
-        // Si ocurre un error, envía una respuesta con el estado 500 y un mensaje de error
-        res.status(500).json({ message: 'Error al obtener el usuario', error });
-    }
-};
 
   module.exports = {
     getUsuarios,

@@ -17,9 +17,32 @@ ENDPOINTS
             "cuentaIban": "CR4950000213454451",
             "montoDisponible": "$100",
         },
+        {
+            "id": 2,
+            "nombre": "Mirtha Vanessa",
+            "correo": "mirtha@gmail.com",
+            "cuentaIban": "CR4950000213454451",
+            "montoDisponible": "$100000"
+        },
     ]
 
-2. Agregar un nuevo usuario
+2. Obtner todos los usuarios por id
+    <GET/id: Se obtiene un único usuario de la lista por el id 
+    Ejemplo de solicitud: GET http://localhost:3000/api/usuarios/1 
+    (al final se coloca el id correspondiente al usuario)
+
+    => Respuesta
+    [
+        {
+            "id": 1,
+            "nombre": "Catalina García",
+            "correo": "catagar@gmail.com",
+            "cuentaIban": "CR4950000213454451",
+            "montoDisponible": "$100",
+        },
+    ]
+
+3. Agregar un nuevo usuario
     <POST: Se agrega un nuevo usuario a la lista del archivo JSON
     Ejemplo de solicitud: POST http://localhost:3000/api/usuarios
 
@@ -40,7 +63,7 @@ ENDPOINTS
         "montoDisponible": "$5000",
     }
 
-3. Actualizar usuario que ya existe
+4. Actualizar usuario que ya existe
     <PUT: Actualiza datos de un usuario específico
     Ejemplo de solicitud: PUT http://localhost:3000/api/usuarios/1 
     (al final se coloca el id correspondiente al usuario)
@@ -65,44 +88,69 @@ ENDPOINTS
         }
     }
 
-4. Eliminar un usuario
-    <DELETE: Elimina un producto de la lista
-    Ejemplo de solicitud: PUT http://localhost:3000/api/productos/2 (el id correspondiente)
+5. Actualizar usuario que ya existe
+    <PATCH: Actualiza un campo específicado que se le indique, sin modificar el resto de datos del usuario
+    Ejemplo de solicitud: PATCH http://localhost:3000/api/usuarios/1 
+    (al final se coloca el id correspondiente al usuario)
+
+    => Cuerpo de la solicitud
+    {
+        "nombre": "Evans Pérez",
+    }
 
     => Respuesta
     {
-    "message": "Producto eliminado correctamente."
+        "message": "Producto actualizado con éxito",
+        "producto": {
+            "id": 1,
+            "nombre": "Evans Pérez", <nombre actualizado>
+            "correo": "catagar@gmail.com",
+            "cuentaIban": "CR4950000213454451",
+            "montoDisponible": "$100"
+        }
     }
 
-///////////////////////////////// VALIDACIONES PARA MANEJAR ERRORES ///////////////////////////////////////////////////
+6. Eliminar un usuario
+    <DELETE: Elimina un usuario de la lista
+    Ejemplo de solicitud: PUT http://localhost:3000/api/usuarios/2 
+    (al final se coloca el id correspondiente al usuario)
+
+    => Respuesta
+    {
+    "message": "Usuario eliminado correctamente."
+    }
+
+
+
+/////////////////////////////// VALIDACIONES PARA MANEJAR ERRORES ///////////////////////////////
 
 1. Falta de datos requeridos (POST o PUT)
 
-    => Si al ejecutar la solicitud falta algún campo requerido (nombre, descripción, precio o cantidadDisponible)
+    => Si al ejecutar la solicitud falta algún campo requerido (nombre, corre, cuentaIban o montoDisponible)
     Se usa el código de estado: <400> BAD REQUEST
 
     Estructura:
-        if (!nombre || !descripcion || !precio || !cantidadDisponible) {
-        return res.status(400).json({ message: "Existe un error de sintáxis o falta algún dato: 'nombre', 'descripcion', 'precio' o 'cantidadDisponible'." });
+        if (!nombre || !correo || !cuentaIban || !montoDisponible) {
+            return res.status(400).json({ message: "Existe un error de sintáxis o falta algún atributo: 'nombre', 'correo', 'cuentaIban' o 'montoDisponible'." });
         }
 
     => Respuesta
     {
-        "message": "Existe un error de sintáxis o falta algún atributo: 'nombre', 'descripcion', 'precio' o 'cantidadDisponible'."
+        "message": "Existe un error de sintáxis o falta algún atributo: 'nombre', 'correo', 'cuentaIban' o 'montoDisponible."
     }
 
-2. Productos no encontrados  (PUT o DELETE)
-    => Si el id del producto no existe 
+2. Usuarios no encontrados  (PUT o DELETE)
+    => Si el id del usuario no existe 
     Se usa el código de estado: <404> NOT FOUND
 
     Estructura:
-        if (productoIndex === -1) {
-        return res.status(404).json({ message: "Producto no encontrado" });
+        if (usuarioIndex === -1) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
         }
 
     => Respuesta 
     {
-        "message": "Producto no encontrado."
+        "message": "Usuario no encontrado."
     }
 
 3. Error interno del servidor
