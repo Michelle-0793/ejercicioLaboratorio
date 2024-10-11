@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const usuarioControllers = require("../controllers/usuarioControllers");
+const usuarioControllers = require(`../controllers/usuarioControllers`);
 
-//Rutas
+//Rutas CRUD
 router.get('/', usuarioControllers.getUsuarios);
 router.post('/', usuarioControllers.postUsuario);
 router.put('/:id', usuarioControllers.updateUsuario);

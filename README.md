@@ -126,7 +126,7 @@ ENDPOINTS
 
 1. Falta de datos requeridos (POST o PUT)
 
-    => Si al ejecutar la solicitud falta algún campo requerido (nombre, corre, cuentaIban o montoDisponible)
+    => Si al ejecutar la solicitud falta algún campo requerido (nombre, correo, cuentaIban o montoDisponible)
     Se usa el código de estado: <400> BAD REQUEST
 
     Estructura:
@@ -166,4 +166,18 @@ ENDPOINTS
     {
         "message": "Error interno del servidor."
         "error": "Detalles del error"
+    }
+
+4. Falta de carácteres en el número de cuenta IBAN (POST o PUT)
+    => Si el id del usuario no existe 
+        Se usa el código de estado: <404> NOT FOUND
+
+    Estructura:
+        else if (cuentaValida.length !== 22 ) {
+          res.status(400).json({message: "La cuenta IBAN debe contener al menos 22 carácteres."})
+      }
+
+    => Respuesta  
+    {
+        "message": "La cuenta IBAN debe contener al menos 22 carácteres."
     }

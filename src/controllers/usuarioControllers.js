@@ -6,27 +6,38 @@ const path = require('path');
 const archivoJson = path.join(__dirname, 'usuarios.json');
 
 ///////////////////////////////  LEER EL ARCHIVO JSON  ///////////////////////////////
+
 const leerJson = async () => {
   try {
-      const data = await fs.readFile(archivoJson, 'utf8');
-      return JSON.parse(data); //Convertir a JSON
+      const data = await fs.readFile(archivoJson, 'utf8');   
+      //'JSON.parse(data)' convierte el texto que se leyó del archivo en un objeto JavaScript
+      return JSON.parse(data);
   } catch (err) {
       console.error("Error al leer el archivo JSON", err);
-      throw err; //Propagar el error para que sea capturado en el controlador
+      //'throw err' propaga el error para que pueda ser capturado por un manejador de errores externo (postman)
+      throw err;
   }
 };
 
 /////////////////////////////  ESCRIBIR EL ARCHIVO JSON  /////////////////////////////
+
 const escribirJson = async (usuarios) => {
   try {
+      //'JSON.stringify(usuarios, null, 2)' convierte el objeto 'usuarios' en formato JSON 
+      //null: no se aplica ningún reemplazo en las propiedades del objeto usuarios. 
+      //Es decir, todas las propiedades del objeto se incluirán en la conversión a JSON sin modificaciones.
+      //2 para agregar espacios en blanco al JSON resultante
       await fs.writeFile(archivoJson, JSON.stringify(usuarios, null, 2), 'utf8');
+
       const now = new Date().toLocaleString(); //Registrar la hora en que se ejecuta la solicitud
+      
       console.log(`El archivo JSON ha sido modificado con éxito. ${now}`);
   } catch (err) {
       console.error("Error al escribir en el archivo JSON", err);
-      throw err; //Propagar el error para que sea capturado en el constralador
+      throw err;
   }
 };
+
 
 //////////////////////////////////////// GET ////////////////////////////////////////
   const getUsuarios = async (req, res) => {
@@ -39,7 +50,6 @@ const escribirJson = async (usuarios) => {
     }
   };
 
-  
 //////////////////////////////////// GET by ID //////////////////////////////////////
 const getUsuarioById = async (req, res) => {
   try {
@@ -63,7 +73,7 @@ const getUsuarioById = async (req, res) => {
 
         const usuarios = await leerJson(); //Traer los usuarios desde el JSON
 
-        //Agregar el nuevo producto
+        //Agregar el nuevo producto 
         const nuevoUsuario = {
           id: usuarios[usuarios.length -1].id + 1,
           nombre,
@@ -76,6 +86,8 @@ const getUsuarioById = async (req, res) => {
         //Y lo envío al JSON:
         await escribirJson (usuarios); 
         res.status(201).json(nuevoUsuario);
+
+      //Validar que la cuenta IBAN contenga 22 carácteres:  
       }else if (cuentaValida.length !== 22 ) {
           res.status(400).json({message: "La cuenta IBAN debe contener al menos 22 carácteres."})
       }else{
@@ -83,7 +95,7 @@ const getUsuarioById = async (req, res) => {
       }
     //Capturar errores
     } catch (error) {
-      res.status(500).json({ message: "Error al agregar producto", error });
+      res.status(500).json({ message: "Error al agregar usuario", error });
     }
   };
   
@@ -95,13 +107,15 @@ const updateUsuario = async (req, res) => {
       const { nombre, correo, cuentaIban, montoDisponible } = req.body;
       const usuarios = await leerJson(); //Traer los usuarios desde el JSON
       const usuarioIndex = usuarios.findIndex(usuario => usuario.id === parseInt(id));
-
-
-
+      const cuentaValida= cuentaIban.split(''); //convertir string a lista
 
       //Validar errores de sintáxis o falta de dato
-      if (!nombre || !correo || !cuentaIban || !montoDisponible) {
-        return res.status(400).json({ message: "Existe un error de sintáxis o falta algún atributo: 'nombre', 'correo', 'cuentaIban' o 'montoDisponible'." });
+      if (!nombre || !correo || !cuentaIban || !montoDisponible || cuentaValida. length !== 22) {
+        if (cuentaValida. length !== 22) {
+          res.status(400).json({message: "La cuenta IBAN debe contener al menos 22 carácteres."})
+        }else{
+          return res.status(400).json({ message: "Existe un error de sintáxis o falta algún atributo: 'nombre', 'correo', 'cuentaIban' o 'montoDisponible'." });
+        }
       }
       if (nombre) {
         usuarios[usuarioIndex].nombre = nombre;
