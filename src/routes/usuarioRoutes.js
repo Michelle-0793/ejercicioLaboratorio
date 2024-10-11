@@ -2,13 +2,12 @@ const express = require('express');
 const router = express.Router();
 const usuarioControllers = require("../controllers/usuarioControllers");
 
-//crud.
+//Rutas
 router.get('/', usuarioControllers.getUsuarios);
 router.post('/', usuarioControllers.postUsuario);
-router.update('/', usuarioControllers.updateUsuario);
-router.delete('/', usuarioControllers.deleteUsuario);
-router.patch('/', usuarioControllers.patchUsuario)
-
-
+router.put('/:id', usuarioControllers.updateUsuario);
+router.delete('/:id', usuarioControllers.deleteUsuario);
+router.patch('/:id', usuarioControllers.patchUsuario);
+router.get('/:id', usuarioControllers.getUsuarioById);
 
 module.exports = router;

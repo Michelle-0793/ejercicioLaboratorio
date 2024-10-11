@@ -5,7 +5,6 @@ const fs = require("fs");
 const path = require("path");
 const usuarioRoutes = require("./src/routes/usuarioRoutes");
 
-
 const PORT = process.env.PORT || 3000;
 
 //Habilitar Cors para las rutas

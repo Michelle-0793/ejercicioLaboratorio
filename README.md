@@ -4,7 +4,7 @@ Las pruebas y validaciones se pueden ejecutar a través del <POSTMAN
 
 
 ENDPOINTS
-1. Obtner todos los productos
+1. Obtner todos los usuarios
     <GET: Se obtiene la lista completa de los usuarios almacenados en el archivo JSON
     Ejemplo de solicitud: GET http://localhost:3000/api/usuarios
 
@@ -19,7 +19,7 @@ ENDPOINTS
         },
     ]
 
-2. Agregar un nuevo producto
+2. Agregar un nuevo usuario
     <POST: Se agrega un nuevo usuario a la lista del archivo JSON
     Ejemplo de solicitud: POST http://localhost:3000/api/usuarios
 
@@ -36,20 +36,21 @@ ENDPOINTS
         "id": 2,
         "nombre": "Ricardo Carmona",
         "correo": "rica@gmail.com",
-        "cuentaIban": "CR4950000213454451",
-        "montoDisponible": "$100",
+        "cuentaIban": "C657568679100000",
+        "montoDisponible": "$5000",
     }
 
-3. Actualizar producto que ya existe
-    <PUT: Actualiza los detalles de un producto específico
-    Ejemplo de solicitud: PUT http://localhost:3000/api/productos/1 (el id correspondiente)
+3. Actualizar usuario que ya existe
+    <PUT: Actualiza datos de un usuario específico
+    Ejemplo de solicitud: PUT http://localhost:3000/api/usuarios/1 
+    (al final se coloca el id correspondiente al usuario)
 
     => Cuerpo de la solicitud
     {
-        "nombre": "Auriculares Bluetooth X-Pro", 
-        "descripcion": "Auriculares inalámbricos con sonido envolvente.",
-        "precio": "Nuevo precio",
-        "cantidadDisponible": "Nueva cantidad disponible"
+        "nombre": "Catalina García",
+        "correo": "catagar@gmail.com",
+        "cuentaIban": "CR4950000213454451",
+        "montoDisponible": "$100
     }
 
     => Respuesta
@@ -58,13 +59,13 @@ ENDPOINTS
         "producto": {
             "id": 1,
             "nombre": "Auriculares Bluetooth X-Pro",
-            "descripcion": "Auriculares inalámbricos con sonido envolvente.",
-            "precio": "$70", <precio actualizado>
-            "cantidadDisponible": "25 unidades" <cantidadDisponible actualizada>
+            "correo": "Auriculares inalámbricos con sonido envolvente.",
+            "cuentaIban": "CR4950000213454451",
+            "montoDisponible": "$30" <cantidadDisponible actualizada>
         }
     }
 
-4. Eliminar un producto
+4. Eliminar un usuario
     <DELETE: Elimina un producto de la lista
     Ejemplo de solicitud: PUT http://localhost:3000/api/productos/2 (el id correspondiente)
 

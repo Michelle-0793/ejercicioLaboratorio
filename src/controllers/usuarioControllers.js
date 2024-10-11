@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 const path = require('path');
 
 //importación del archivo json
-const archivoJson = path.join(__dirname, 'Usuarios.json');
+const archivoJson = path.join(__dirname, 'usuarios.json');
 
 ///////////////////////////////  LEER EL ARCHIVO JSON  ///////////////////////////////
 const leerJson = async () => {
@@ -82,21 +82,21 @@ const updateUsuario = async (req, res) => {
       const usuarioIndex = usuarios.findIndex(usuario => usuario.id === parseInt(id));
 
       //Validar errores de sintáxis o falta de dato
-      if (!nombre || !descripcion || !precio || !cantidadDisponible) {
-        return res.status(400).json({ message: "Existe un error de sintáxis o falta algún atributo: 'nombre', 'descripcion', 'precio' o 'cantidadDisponible'." });
+      if (!nombre || !correo || !cuentaIban || !montoDisponible) {
+        return res.status(400).json({ message: "Existe un error de sintáxis o falta algún atributo: 'nombre', 'correo', 'cuentaIban' o 'montoDisponible'." });
       }
   
       if (nombre) {
         usuarios[usuarioIndex].nombre = nombre;
       }
-      if (descripcion) {
-        usuarios[usuarioIndex].descripcion = descripcion;
+      if (correo) {
+        usuarios[usuarioIndex].correo = correo;
       }
-      if (precio) {
-        usuarios[usuarioIndex].precio = precio;
+      if (cuentaIban) {
+        usuarios[usuarioIndex].cuentaIban = cuentaIban;
       }
-      if (cantidadDisponible) {
-        usuarios[usuarioIndex].cantidadDisponible = cantidadDisponible;
+      if (montoDisponible) {
+        usuarios[usuarioIndex].montoDisponible = montoDisponible;
       }
   
       await escribirJson (usuarios); //Envío el usuario actualizado al Json
@@ -138,6 +138,7 @@ const deleteUsuario = async (req, res) => {
 ///////////////Patch de Usuarios/////////////////////////////////////////////
   const patchUsuario = async (req, res) =>{
     try {
+      console.log("hola");
         const id = parseInt(req.params.id);
         const usuarios = await leerJson(); //Traer los usuarios desde el JSON
         const usuario= usuarios.find(item => item.id === id);
@@ -145,8 +146,10 @@ const deleteUsuario = async (req, res) => {
 
         //////Object.assign(target, source(s))////////////////
         Object.assign(usuario, req.body); 
+        console.log(usuario);
         usuarios[index]=usuario; 
-        await escribirJson (usuarios); //Envío el usuario actualizado al Json
+        await escribirJson (usuarios); //Envío el usuario actualizado al Json}
+        res.status(200).json({ message: "Usuario actualizado con éxito", usuario: usuarios[usuarioIndex] });
     } catch (error) {
         res.status(500).json({mensaje:'error interno en el servidor'})
     }
